@@ -140,7 +140,7 @@
                 {{ ucfirst($booking->payment_type) }} Payment
             </td>
             <td style="text-align: right; font-weight: bold;">
-                ₹{{ number_format($booking->payment_amount, 2) }}
+                Rs.{{ number_format($booking->payment_amount, 2) }}
             </td>
         </tr>
     </tbody>

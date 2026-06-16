@@ -1,10 +1,10 @@
 <?php
 
-use App\Models\User;
-use App\Models\Restaurant;
 use App\Models\ManagerRequest;
-use Spatie\Permission\Models\Role;
+use App\Models\Restaurant;
+use App\Models\User;
 use Livewire\Livewire;
+use Spatie\Permission\Models\Role;
 
 beforeEach(function () {
     Role::firstOrCreate(['name' => 'super_admin']);

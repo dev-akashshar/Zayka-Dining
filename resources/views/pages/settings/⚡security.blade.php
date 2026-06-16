@@ -1,6 +1,5 @@
 <?php
 
-use App\Concerns\PasswordValidationRules;
 use Flux\Flux;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
@@ -18,11 +17,6 @@ use Livewire\Attributes\On;
 /* @end-chisel-2fa */
 
 new #[Title('Security settings')] class extends Component {
-    use PasswordValidationRules;
-
-    public string $current_password = '';
-    public string $password = '';
-    public string $password_confirmation = '';
 
     /* @chisel-2fa */
     public bool $canManageTwoFactor;
@@ -73,31 +67,6 @@ new #[Title('Security settings')] class extends Component {
             $this->loadPasskeys();
         }
         /* @end-chisel-passkeys */
-    }
-
-    /**
-     * Update the password for the currently authenticated user.
-     */
-    public function updatePassword(): void
-    {
-        try {
-            $validated = $this->validate([
-                'current_password' => $this->currentPasswordRules(),
-                'password' => $this->passwordRules(),
-            ]);
-        } catch (ValidationException $e) {
-            $this->reset('current_password', 'password', 'password_confirmation');
-
-            throw $e;
-        }
-
-        Auth::user()->update([
-            'password' => $validated['password'],
-        ]);
-
-        $this->reset('current_password', 'password', 'password_confirmation');
-
-        Flux::toast(variant: 'success', text: __('Password updated.'));
     }
 
     /* @chisel-passkeys */
@@ -187,41 +156,18 @@ new #[Title('Security settings')] class extends Component {
 
     <flux:heading class="sr-only">{{ __('Security settings') }}</flux:heading>
 
-    <x-pages::settings.layout :heading="__('Update password')" :subheading="__('Ensure your account is using a long, random password to stay secure')">
-        <form method="POST" wire:submit="updatePassword" class="mt-6 space-y-6">
-            <flux:input
-                wire:model="current_password"
-                :label="__('Current password')"
-                type="password"
-                required
-                autocomplete="current-password"
-                viewable
-            />
-            <flux:input
-                wire:model="password"
-                :label="__('New password')"
-                type="password"
-                required
-                autocomplete="new-password"
-                passwordrules="{{ \Illuminate\Validation\Rules\Password::defaults()->toPasswordRulesString() }}"
-                viewable
-            />
-            <flux:input
-                wire:model="password_confirmation"
-                :label="__('Confirm password')"
-                type="password"
-                required
-                autocomplete="new-password"
-                passwordrules="{{ \Illuminate\Validation\Rules\Password::defaults()->toPasswordRulesString() }}"
-                viewable
-            />
-
-            <div class="flex items-center gap-4">
-                <flux:button variant="primary" type="submit" data-test="update-password-button">
-                    {{ __('Save') }}
-                </flux:button>
+    <x-pages::settings.layout :heading="__('Account Security')" :subheading="__('Configure passwordless authentication preferences, two-factor keys, and device passkeys')">
+        <div class="bg-gradient-to-br from-indigo-500/5 to-violet-500/5 dark:from-indigo-500/10 dark:to-violet-500/10 border border-indigo-100 dark:border-indigo-950/40 rounded-2xl p-6 mt-6 flex gap-4 items-start shadow-xs">
+            <div class="p-3 bg-indigo-500/10 dark:bg-indigo-500/25 text-indigo-600 dark:text-indigo-400 rounded-xl shrink-0 mt-0.5">
+                <flux:icon name="shield-check" class="size-6" />
             </div>
-        </form>
+            <div class="space-y-1">
+                <h4 class="font-bold text-neutral-800 dark:text-neutral-100 text-sm leading-snug">{{ __('Passwordless Authentication Active') }}</h4>
+                <p class="text-xs text-neutral-500 dark:text-neutral-400 leading-relaxed max-w-2xl">
+                    {{ __('Your Zayka Dining account is secured using passwordless email OTP verification codes. Since passwords are not used to log in, password management is disabled. You can further enhance your account security using the options below when enabled.') }}
+                </p>
+            </div>
+        </div>
 
         {{-- @chisel-2fa --}}
         @if ($canManageTwoFactor)

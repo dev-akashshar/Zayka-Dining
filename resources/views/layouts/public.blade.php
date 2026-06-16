@@ -1,5 +1,27 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="scroll-smooth">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="scroll-smooth dark"
+    x-data="{
+        darkMode: localStorage.getItem('zaykaTheme') !== 'light',
+        toggleTheme() {
+            this.darkMode = !this.darkMode;
+            localStorage.setItem('zaykaTheme', this.darkMode ? 'dark' : 'light');
+            if (this.darkMode) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        }
+    }"
+    x-init="
+        if (localStorage.getItem('zaykaTheme') === 'light') {
+            document.documentElement.classList.remove('dark');
+            darkMode = false;
+        } else {
+            document.documentElement.classList.add('dark');
+            darkMode = true;
+        }
+    "
+>
     <head>
         @include('partials.head')
 
@@ -22,9 +44,12 @@
             .font-serif-indian {
                 font-family: 'Playfair Display', serif;
             }
+            .theme-toggle-btn {
+                transition: all 0.2s ease;
+            }
         </style>
     </head>
-    <body class="bg-stone-50 text-stone-900 dark:bg-stone-950 dark:text-stone-50 min-h-screen selection:bg-amber-600 selection:text-white transition-colors duration-300">
+    <body class="bg-[#09090b] text-zinc-100 min-h-screen selection:bg-amber-600 selection:text-white transition-colors duration-300">
         {{ $slot }}
 
         @persist('toast')

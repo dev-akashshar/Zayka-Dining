@@ -1,8 +1,8 @@
 <?php
 
+use App\Models\Attendance;
 use App\Models\Restaurant;
 use App\Models\User;
-use App\Models\Attendance;
 use Spatie\Permission\Models\Role;
 
 beforeEach(function () {

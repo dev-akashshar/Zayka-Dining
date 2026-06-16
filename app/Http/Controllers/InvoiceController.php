@@ -24,7 +24,7 @@ class InvoiceController extends Controller
             abort(403, 'Unauthorized access to invoice.');
         }
 
-        $invoiceService = new InvoiceService();
+        $invoiceService = new InvoiceService;
         $pdf = $invoiceService->generatePdf($booking);
 
         return $pdf->download("invoice-{$booking->id}.pdf");

@@ -1,9 +1,8 @@
 <?php
 
+use App\Models\Booking;
 use App\Models\Restaurant;
 use App\Models\User;
-use App\Models\Table;
-use App\Models\Booking;
 use Spatie\Permission\Models\Role;
 
 beforeEach(function () {
@@ -56,7 +55,7 @@ test('successful payment session updates booking status', function () {
 
     $response = $this->get(route('booking.success', [
         'id' => $this->booking->id,
-        'session_id' => 'stripe_session_12345'
+        'session_id' => 'stripe_session_12345',
     ]));
 
     $response->assertRedirect(route('dashboard'));

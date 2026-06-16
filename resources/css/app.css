@@ -64,3 +64,31 @@ select:focus[data-flux-control] {
 /* \[:where(&)\]:size-4 {
     @apply size-4;
 } */
+
+/* Custom Sidebar Hover Class */
+.sidebar-item-premium {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    position: relative !important;
+}
+.sidebar-item-premium:hover {
+    transform: translateX(6px) !important;
+    background-color: rgba(99, 102, 241, 0.08) !important;
+}
+.dark .sidebar-item-premium:hover {
+    background-color: rgba(129, 140, 248, 0.12) !important;
+}
+.sidebar-item-premium::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 25%;
+    height: 50%;
+    width: 3px;
+    background-color: #6366f1;
+    border-radius: 0 4px 4px 0;
+    transform: scaleY(0);
+    transition: transform 0.2s ease;
+}
+.sidebar-item-premium:hover::before {
+    transform: scaleY(1);
+}

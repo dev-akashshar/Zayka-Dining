@@ -5,7 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Carbon;
 
 #[Fillable(['email', 'code', 'expires_at', 'verified_at'])]
 class Otp extends Model
@@ -54,6 +53,7 @@ class Otp extends Model
 
         if ($otp) {
             $otp->update(['verified_at' => now()]);
+
             return true;
         }
 

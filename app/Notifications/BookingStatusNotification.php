@@ -3,6 +3,8 @@
 namespace App\Notifications;
 
 use App\Models\Booking;
+use App\Services\InvoiceService;
+use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -39,15 +41,15 @@ class BookingStatusNotification extends Notification implements ShouldQueue
     {
         $restaurantName = $this->booking->restaurant->name;
         $dateStr = $this->booking->booking_date->format('M d, Y');
-        $timeStr = \Carbon\Carbon::parse($this->booking->booking_time)->format('h:i A');
+        $timeStr = Carbon::parse($this->booking->booking_time)->format('h:i A');
 
         $mail = (new MailMessage)
-            ->subject(config('app.name', 'Zayka Dining') . " - Booking Update for {$restaurantName}");
+            ->subject(config('app.name', 'Zayka Dining')." - Booking Update for {$restaurantName}");
 
         switch ($this->type) {
             case 'new_booking':
-                $mail->line("A new table booking has been requested at your restaurant.")
-                    ->line("Details:")
+                $mail->line('A new table booking has been requested at your restaurant.')
+                    ->line('Details:')
                     ->line("- Guest Count: {$this->booking->guest_count}")
                     ->line("- Date: {$dateStr}")
                     ->line("- Time: {$timeStr}")
@@ -55,40 +57,40 @@ class BookingStatusNotification extends Notification implements ShouldQueue
                 break;
             case 'payment_received':
                 $mail->line("We have received your payment of ₹{$this->booking->payment_amount} for the reservation at {$restaurantName}.")
-                    ->line("Your booking is currently pending confirmation from the restaurant.")
+                    ->line('Your booking is currently pending confirmation from the restaurant.')
                     ->action('View Your Dashboard', route('dashboard'));
 
                 try {
-                    $invoiceService = new \App\Services\InvoiceService();
+                    $invoiceService = new InvoiceService;
                     $pdf = $invoiceService->generatePdf($this->booking);
                     $mail->attachData($pdf->output(), "invoice-{$this->booking->id}.pdf", [
                         'mime' => 'application/pdf',
                     ]);
                 } catch (\Exception $e) {
-                    logger()->error('Failed to attach invoice PDF: ' . $e->getMessage());
+                    logger()->error('Failed to attach invoice PDF: '.$e->getMessage());
                 }
                 break;
             case 'confirmed':
                 $mail->line("Good news! Your table booking at {$restaurantName} has been confirmed.")
-                    ->line("Details:")
+                    ->line('Details:')
                     ->line("- Date: {$dateStr}")
                     ->line("- Time: {$timeStr}")
-                    ->line("- Table: " . ($this->booking->table ? $this->booking->table->name : 'Assigned'))
+                    ->line('- Table: '.($this->booking->table ? $this->booking->table->name : 'Assigned'))
                     ->action('View Your Booking', route('dashboard'));
 
                 try {
-                    $invoiceService = new \App\Services\InvoiceService();
+                    $invoiceService = new InvoiceService;
                     $pdf = $invoiceService->generatePdf($this->booking);
                     $mail->attachData($pdf->output(), "invoice-{$this->booking->id}.pdf", [
                         'mime' => 'application/pdf',
                     ]);
                 } catch (\Exception $e) {
-                    logger()->error('Failed to attach invoice PDF: ' . $e->getMessage());
+                    logger()->error('Failed to attach invoice PDF: '.$e->getMessage());
                 }
                 break;
             case 'rejected':
                 $mail->line("Unfortunately, your booking request at {$restaurantName} has been rejected.")
-                    ->line("If you made a payment, it will be refunded.")
+                    ->line('If you made a payment, it will be refunded.')
                     ->action('View Alternatives', route('dashboard'));
                 break;
             case 'cancelled':
@@ -124,7 +126,7 @@ class BookingStatusNotification extends Notification implements ShouldQueue
     {
         $restaurantName = $this->booking->restaurant->name;
         $dateStr = $this->booking->booking_date->format('M d, Y');
-        $timeStr = \Carbon\Carbon::parse($this->booking->booking_time)->format('h:i A');
+        $timeStr = Carbon::parse($this->booking->booking_time)->format('h:i A');
 
         return match ($this->type) {
             'new_booking' => "New reservation request for {$this->booking->guest_count} guests on {$dateStr} at {$timeStr}.",
@@ -133,7 +135,7 @@ class BookingStatusNotification extends Notification implements ShouldQueue
             'rejected' => "Reservation at {$restaurantName} was rejected.",
             'cancelled' => "Reservation at {$restaurantName} was cancelled.",
             'reminder' => "Upcoming reservation at {$restaurantName} tomorrow at {$timeStr}.",
-            default => "Booking status updated."
+            default => 'Booking status updated.'
         };
     }
 }

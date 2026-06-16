@@ -27,7 +27,7 @@ Route::get('manager-request/success/{id}', [StripeController::class, 'managerSuc
 // Authenticated dashboard and settings
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::livewire('dashboard', 'pages::dashboard')->name('dashboard');
-    
+
     // Booking checkout & payment routes
     Route::get('booking/pay/{id}', [StripeController::class, 'checkout'])->name('booking.pay');
     Route::livewire('booking/pay/mock/{id}', 'pages::mock-checkout')->name('booking.pay.mock');

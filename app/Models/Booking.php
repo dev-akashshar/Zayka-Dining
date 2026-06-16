@@ -20,11 +20,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
     'payment_type',
     'payment_amount',
     'stripe_payment_intent_id',
-    'notes'
+    'notes',
 ])]
 class Booking extends Model
 {
-    use HasFactory, BelongsToTenant;
+    use BelongsToTenant, HasFactory;
 
     protected function casts(): array
     {

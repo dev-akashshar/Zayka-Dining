@@ -1,12 +1,12 @@
 <?php
 
-use App\Models\Restaurant;
-use App\Models\User;
-use App\Models\Table;
 use App\Models\Booking;
+use App\Models\Restaurant;
+use App\Models\Table;
+use App\Models\User;
 use App\Services\BookingService;
-use Spatie\Permission\Models\Role;
 use Livewire\Livewire;
+use Spatie\Permission\Models\Role;
 
 beforeEach(function () {
     // Set up default roles
@@ -57,8 +57,8 @@ beforeEach(function () {
 });
 
 test('customer can see available tables', function () {
-    $service = new BookingService();
-    
+    $service = new BookingService;
+
     // Check table for 2 guests - should return table 1 (capacity 2)
     $table = $service->findAvailableTable($this->restaurant->id, now()->toDateString(), '19:00:00', 2);
     expect($table)->not->toBeNull();
@@ -71,7 +71,7 @@ test('customer can see available tables', function () {
 });
 
 test('customer cannot double book a table within overlapping slots', function () {
-    $service = new BookingService();
+    $service = new BookingService;
 
     // Make a booking on table 1 at 19:00
     Booking::create([
@@ -148,4 +148,35 @@ test('customer can cancel a pending or confirmed booking', function () {
         ->call('cancelBooking', $booking->id);
 
     expect($booking->fresh()->status)->toBe('cancelled');
+});
+
+test('staff can load dashboard, see tables, and search menu items', function () {
+    $staff = User::create([
+        'name' => 'Test Staff',
+        'email' => 'teststaff@example.com',
+        'password' => bcrypt('password'),
+        'restaurant_id' => $this->restaurant->id,
+    ]);
+    $staff->assignRole('staff');
+
+    // Create a MenuItem
+    $menuItem = App\Models\MenuItem::create([
+        'restaurant_id' => $this->restaurant->id,
+        'name' => 'Special Pasta',
+        'description' => 'Delicious cream pasta',
+        'price' => 250.00,
+        'category' => 'Main Course',
+        'is_available' => true,
+    ]);
+
+    $this->actingAs($staff);
+
+    Livewire::test('pages::dashboard.⚡staff')
+        ->assertSet('tab', 'dashboard')
+        ->assertSee('Staff Workspace')
+        ->assertCount('tablesList', 2)
+        ->set('searchMenu', 'Pasta')
+        ->assertCount('menuItemsList', 1)
+        ->set('searchMenu', 'NonExistentItem')
+        ->assertCount('menuItemsList', 0);
 });

@@ -24,7 +24,7 @@ trait BelongsToTenant
                 $user = Auth::user();
                 // If user is a tenant user (Manager/Staff), scope queries by their restaurant_id
                 if ($user->restaurant_id && ! $user->hasRole('super_admin')) {
-                    $builder->where($builder->getModel()->getTable() . '.restaurant_id', $user->restaurant_id);
+                    $builder->where($builder->getModel()->getTable().'.restaurant_id', $user->restaurant_id);
                 }
             }
         });
